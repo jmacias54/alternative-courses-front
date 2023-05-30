@@ -1,26 +1,35 @@
 import { Button } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AssignmentInd from '@mui/icons-material/AssignmentInd';
 import CustomSnackbar from './CustomSnackbar';
-import React, { useState } from 'react';
 import students_services from '../services/students-service';
-import StudentDetail from '../components/StudentDetail';
+import React, { useState, useEffect } from 'react';
 
 
-const RenderOptionsCell = (params, fetchData) => {
+const RenderOptionsCell = (params,
+    fetchData,
+    handleStudentDetail
+) => {
     const [customSnackbarOpen, isCustomSnackbarOpen] = React.useState(false);
     const [alertMessage, setAlertMessage] = useState("");
     const [alertSeverity, setAlertSeverity] = useState("");
+    const [studentId, setStudentId] = useState(null);
 
 
+    useEffect(() => {
+        setStudentId(params.row.id);
+      }, [params.row.id]);
+
+      
     const handleDelete = async () => {
-        // Lógica para eliminar el registro
+
         try {
-            const response = await students_services.deleteStudent(params.row.id);
+            const response = await students_services.deleteStudent(studentId);
             console.log('Registro eliminado:', response.data);
             isCustomSnackbarOpen(true);
             setAlertMessage("Exito eliminar el registro:");
             setAlertSeverity("success");
-            fetchData(); // Actualizar los datos después de eliminar el registro
+            fetchData(); 
         } catch (error) {
             console.error('Error al eliminar el registro:', error);
             isCustomSnackbarOpen(true);
@@ -38,8 +47,9 @@ const RenderOptionsCell = (params, fetchData) => {
         setAlertSeverity("");
     };
 
-    const handleDetail = (event, reason) => {
-     
+    const handleDetail = () => {
+        console.log("---handleDetail--",studentId)
+        handleStudentDetail(studentId)
     };
 
 
@@ -48,8 +58,8 @@ const RenderOptionsCell = (params, fetchData) => {
             <Button onClick={handleDelete} color="error">
                 <DeleteIcon />
             </Button>
-            <Button onClick={handleDetail} color="error">
-                <DeleteIcon />
+            <Button onClick={handleDetail} color="primary">
+                <AssignmentInd />
             </Button>
             <CustomSnackbar
                 message={alertMessage}

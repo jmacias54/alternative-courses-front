@@ -82,7 +82,6 @@ export default function Signin() {
     }
   }
 
-  const onClose = (e) => { }
 
   const handleFormSubmit = (e) => {
     console.log('handleFormSubmit', e)
@@ -98,7 +97,6 @@ export default function Signin() {
     }
 
     login(data.username, data.password);
-    // Limpiar los errores de validación
     setFormErrors({ usernameError: '', passwordError: '' });
   };
 

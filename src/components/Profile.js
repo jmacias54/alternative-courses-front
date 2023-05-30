@@ -15,6 +15,7 @@ import renderOptionsCell from '../utils/RenderOptionsCell';
 import students_services from '../services/students-service';
 import NewStudentModal from './NewStudentModal';
 import CustomSnackbar from '../utils/CustomSnackbar';
+import StudentDetail from '../components/StudentDetail';
 
 
 const useStyles = styled((theme) => ({
@@ -44,20 +45,24 @@ export default function Profile() {
   const userJSON = JSON.parse(user); // Parsea el valor almacenado en localStorage a un objeto o una matriz
   const [openModal, setOpenModal] = useState(false);
   const [data, setData] = useState([]);
+  const [studentId, setStudentId] = useState(0);
+
+  
   const [openModalNewStudet, setOpenModalNewStudet] = useState(false);
+  const [openModalStudentDetail, setOpenModalStudentDetail] = useState(false);
 
 
   const columns = [
-    { field: 'id', headerName: 'ID', width: 100 },
-    { field: 'name', headerName: 'Name', width: 200 },
-    { field: 'firstLastName', headerName: 'First Last Name', width: 200 },
-    { field: 'secondLastName', headerName: 'Second Last Name', width: 200 },
-    { field: 'email', headerName: 'Email', width: 200 },
+    { field: 'id', headerName: 'ID', width: 50 },
+    { field: 'name', headerName: 'Name', width: 100 },
+    { field: 'firstLastName', headerName: 'First Last Name', width: 100 },
+    { field: 'secondLastName', headerName: 'Second Last Name', width: 100 },
+    { field: 'email', headerName: 'Email', width: 100 },
     {
       field: 'opciones',
       headerName: 'Opciones',
       width: 200,
-      renderCell: (params) => renderOptionsCell(params, fetchData), // Pasar fetchData como prop
+      renderCell: (params) => renderOptionsCell(params, fetchData,handleStudentDetail), // Pasar fetchData como prop
     }
   ];
 
@@ -75,7 +80,7 @@ export default function Profile() {
         firstLastName: row.firstLastName,
         secondLastName: row.secondLastName,
         email: row.email,
-       
+
       }));
       setData(formattedData);
     } catch (error) {
@@ -86,6 +91,18 @@ export default function Profile() {
 
   const handleCreateNewStudent = () => {
     setOpenModalNewStudet(true);
+  };
+
+  const handleStudentDetail = (studentId) => {
+    console.log("---handleStudentDetail---",studentId)
+    setStudentId(studentId);
+    setOpenModalStudentDetail(true);
+
+  };
+
+  const handleStudentDetailClose = () => {
+    console.log("---handleStudentDetailClose---")
+    setOpenModalStudentDetail(false);
   };
 
   const handleNewStudentClose = () => {
@@ -126,7 +143,7 @@ export default function Profile() {
       isCustomSnackbarOpen(true);
       setAlertMessage("New Student is created");
       setAlertSeverity("success");
-      fetchData(); 
+      fetchData();
     } catch (error) {
       console.error('Error to create new Student:', error);
       isCustomSnackbarOpen(true);
@@ -134,6 +151,7 @@ export default function Profile() {
       setAlertSeverity("warning");
     }
     setOpenModal(false);
+    handleNewStudentClose();
 
   };
 
@@ -173,31 +191,34 @@ export default function Profile() {
           </div>
         </Toolbar>
       </AppBar>
-      <Card className={classes.root} variant="outlined">
+      <Card variant="outlined">
         <CardContent>
           <Person className={classes.large} />
           <Typography variant="h5">
             Welcome {userJSON.username}
           </Typography>
+          <>
+            <div className="datagrid-container" style={{ height: 500, width: '50%' }}>
+              <DataGrid
+                rows={data}
+                columns={columns}
+                disableSelectionOnClick
+                onSelectionModelChange={(selectedRows) => console.log(selectedRows)}
+                components={{
+                  Toolbar: CustomToolbar,
+                }}
+              />
+
+
+            </div>
+          </>
         </CardContent>
       </Card>
 
-      <>
-        <div style={{ height: 400, width: '90%' }}>
-          <DataGrid
-            rows={data}
-            columns={columns}
-            disableSelectionOnClick
-            onSelectionModelChange={(selectedRows) => console.log(selectedRows)}
-            components={{
-              Toolbar: CustomToolbar,
-            }}
-          />
-         
-    
-        </div>
-      </>
+
       <NewStudentModal open={openModalNewStudet} onClose={handleNewStudentClose} onSubmit={handleFormNewStudentSubmit} />
+      <StudentDetail open={openModalStudentDetail} onClose={handleStudentDetailClose} studentId={studentId} />
+
       <CustomSnackbar
         message={alertMessage}
         severity={alertSeverity}

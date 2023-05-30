@@ -36,3 +36,16 @@
     transform: rotate(360deg);
   }
 }
+
+.datagrid-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Ajusta la altura del contenedor a la altura completa de la ventana */
+}
